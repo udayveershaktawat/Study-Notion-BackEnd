@@ -14,4 +14,4 @@ const courseProgress = mongoose.Schema({
 
 });
 
-module.exports = ("courseProgress",courseProgress)
+module.exports = ("courseProgress",courseProgress);

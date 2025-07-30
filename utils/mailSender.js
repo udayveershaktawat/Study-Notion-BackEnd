@@ -23,4 +23,25 @@ const mailSender = async (email, title, body) => {
   }
 };
 
+// a function to send emails
+
+async function sendVerificationEmail(email, otp){
+    try{
+
+    }
+    catch(error){
+        console.log("error occer while sending email",error)
+        throw error
+    }
+}
+
+
+
+
+
+
+
+
+
+
 module.exports = mailSender;

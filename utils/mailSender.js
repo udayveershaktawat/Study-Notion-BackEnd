@@ -28,12 +28,22 @@ const mailSender = async (email, title, body) => {
 async function sendVerificationEmail(email, otp){
     try{
 
+        const mailResponse = await mailSender(email,"verification email from study-notion",otp)
+        console.log("email send successfully",mailResponse)
+
+
     }
     catch(error){
         console.log("error occer while sending email",error)
         throw error
     }
 }
+
+
+OTPSchema.pre("save",async function(next){
+    await sendVerificationEmail(this.email,this.otp);
+    next();
+})
 
 
 

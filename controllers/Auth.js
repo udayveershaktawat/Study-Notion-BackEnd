@@ -230,3 +230,15 @@ exports.login = async(req,res)=>{
 
   }
 }
+
+
+// reset password
+
+exports.changePassword = async(req,res)=>{
+  try{
+
+  }
+  catch(error){
+    
+  }
+}

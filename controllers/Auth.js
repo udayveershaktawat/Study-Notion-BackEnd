@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const OTP = require("../models/OTP");
 const optGenerator = require("otp-generator");
+const bcrypt = require("bcrypt")
 
 // send OTP
 exports.sendOTP = async (req, res) => {
@@ -60,3 +61,98 @@ exports.sendOTP = async (req, res) => {
     });
   }
 };
+// sign up controller
+
+exports.signUp = async(req,res)=>{
+  try{
+    // data fetch
+
+    const { firstName,lastName,email,password,confirmPassword,accountType,contactNumber,otp} = req.body;
+
+    // validate
+    if(!firstName || !lastName || !email || !password || !confirmPassword || !otp){
+      return res.status(403).json({
+        success:false,
+        message:"all fields are required"
+      })
+    }
+
+    // 2 password match
+
+    if(password !== confirmPassword){
+      return res.status(400).json({
+        success:false,
+        message:"password and confirm password value does not match, please fill correct password"
+      })
+    }
+
+    // check user ALredy exist or not
+
+    const existingUser =  await  User.findOne({email});
+    if(existingUser){
+      return res.status(400).json({
+        success:false,
+        message:"User already exist"
+      })
+    }
+    // find most recent OTP stored for the user
+    const recentOtp = await OTP.find({email}).sort({createdAt:-1}).limit(1);
+    console.log(recentOtp);
+    // validate otp
+    if(recentOtp.length == 0){
+      // otp not found
+      return res.status(400).json({
+        success:false,
+        message:"otp not found"
+      })
+
+    }
+    else if(otp !== recentOtp.otp){
+      // invalid otp
+      return res.status(400).json({
+        success:false,
+        message:"invalid otp"
+      })
+    }
+
+    // hash password
+    const hashedPassword = await bcrypt.hash(password,10);
+
+    // create entry in db
+    const profileDetails = await Profile.create({
+      gender:null,
+      dateOfBirth:null,
+      contactNumber:null,
+    });
+
+    const user = await User.create({
+      firstName,
+      lastName,
+      email,
+      contactNumber,
+      password:hashedPassword,
+      accountType,
+      additionalDetails:profileDetails._id,
+      image:`https://api.dicebear.com/5.x/initials/svg?seed=${firstName} ${lastName}`
+    });
+
+
+    // return res
+    return res.status(200).json({
+      success:true,
+      message:"user is register successfully"
+    })
+
+
+
+  }
+  catch(error){
+    console.log(error)
+    return res.status(500).json({
+      success:false,
+      message:"user can not be register"
+
+    })
+
+  }
+}

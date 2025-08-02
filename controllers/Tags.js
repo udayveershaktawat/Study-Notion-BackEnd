@@ -29,7 +29,29 @@ exports.createTag = async(req,res)=>{
     catch(error){
         return res.status(500).json({
             success:false,
-            message:"something went wrong while creating tag"
+            message:"something went wrong while creating tag",
+            error:error.message,
         })
+    }
+}
+
+// get all tags
+exports.showAlltags = async(req,res)=>{
+    try{
+        const allTags = await Tag.find({},{name:true,description:true});
+        res.status(200).json({
+            success:true,
+            message:"all tags returned successfully",
+            allTags,
+        })
+
+    }
+    catch(error){
+        return res.status(500).json({
+            success:false,
+            message:"something went wrong while fetching tag",
+            error:error.message
+        })
+
     }
 }
